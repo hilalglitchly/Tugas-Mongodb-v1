@@ -10,6 +10,7 @@ Project ini adalah contoh setup **MongoDB + Mongo Express + Node.js API** menggu
 
 # Struktur Project
 mongo-docker-project
+- **screenshots** Dokumentasi
 - **docker-compose.yml** Mengatur MongoDB, Mongo Express, dan Node.js API
 - **Dockerfile** Dockerfile untuk aplikasi Node.js
 - **package.json** Dependensi dan script Node.js
