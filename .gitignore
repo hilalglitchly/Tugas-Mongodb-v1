@@ -1,0 +1,18 @@
+# Node Modules
+node_modules/
+
+# Environment & Secrets
+.env
+.env.local
+
+# Docker Volumes & Data
+mongo-data/
+docker-data/
+*.log
+
+# VS Code
+.vscode/
+
+# System Files
+.DS_Store
+Thumbs.db
