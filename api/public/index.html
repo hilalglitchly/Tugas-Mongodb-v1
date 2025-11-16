@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Etalase Laptop</title>
+  <style>
+    :root{--bg:#f3f6f9;--card:#fff;--muted:#6b7280;--accent:#0ea5a4}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#0f172a;background:var(--bg);margin:0}
+    .wrap{max-width:1200px;margin:28px auto;padding:18px}
+    header{display:flex;gap:12px;align-items:center;justify-content:space-between}
+    h1{margin:0;font-size:24px}
+    .controls{display:flex;gap:8px;align-items:center}
+    .search{padding:10px 12px;border-radius:10px;border:1px solid #e6e9ef;width:320px}
+    .select{padding:10px;border-radius:10px;border:1px solid #e6e9ef;background:#fff}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:18px}
+    .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);display:flex;flex-direction:column}
+    .thumb{height:160px;border-radius:8px;overflow:hidden;background:#f8fafc}
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .meta{margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .title{font-weight:700;font-size:15px}
+    .brand{font-size:13px;color:var(--muted)}
+    .price{font-weight:800;color:#111;margin-top:6px}
+    .specs{font-size:13px;color:#555;margin-top:6px}
+    .actions{display:flex;gap:8px;margin-top:10px}
+    .btn{flex:1;padding:8px;border-radius:10px;border:0;cursor:pointer}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-outline{background:#fff;border:1px solid #e6e9ef;color:#111}
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+    .modal{background:#fff;border-radius:12px;max-width:900px;width:100%;padding:18px;display:flex;gap:14px}
+    .modal .left{flex:1}
+    .modal .right{flex:1}
+    .close{background:#efefef;border:0;padding:6px;border-radius:6px;cursor:pointer}
+    @media (max-width:780px){.modal{flex-direction:column}}
+    footer{margin-top:22px;color:#6b7280;font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Etalase Laptop</h1>
+      <div class="controls">
+        <input id="q" class="search" placeholder="Cari nama, brand, kategori..." />
+        <select id="brand" class="select">
+          <option value="">Semua Brand</option>
+        </select>
+      </div>
+    </header>
+
+    <div id="grid" class="grid" aria-live="polite"></div>
+    <footer>Data contoh — tombol “Beli” hanya demo. Backend: Node + MongoDB (Docker)</footer>
+  </div>
+
+  <!-- modal detail -->
+  <div id="backdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document">
+      <div class="left">
+        <div id="modal-img" class="thumb"><img src="" alt=""></div>
+      </div>
+      <div class="right">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 id="modal-name" style="margin:0"></h3>
+          <button id="closeBtn" class="close">✕</button>
+        </div>
+        <div id="modal-brand" class="brand" style="margin-top:6px"></div>
+        <div id="modal-price" class="price"></div>
+        <div id="modal-specs" class="specs"></div>
+        <p id="modal-desc" style="margin-top:10px;color:#374151"></p>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button id="buyBtn" class="btn btn-primary">Beli Sekarang</button>
+          <button id="addCartBtn" class="btn btn-outline">Tambah ke Keranjang</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const qInput = document.getElementById('q');
+    const brandSelect = document.getElementById('brand');
+    const backdrop = document.getElementById('backdrop');
+    const modalImg = document.getElementById('modal-img');
+    const modalName = document.getElementById('modal-name');
+    const modalBrand = document.getElementById('modal-brand');
+    const modalPrice = document.getElementById('modal-price');
+    const modalSpecs = document.getElementById('modal-specs');
+    const modalDesc = document.getElementById('modal-desc');
+    const closeBtn = document.getElementById('closeBtn');
+    const buyBtn = document.getElementById('buyBtn');
+    const addCartBtn = document.getElementById('addCartBtn');
+
+    let allItems = [];
+
+    function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]); }
+
+    async function load(q='', brand='') {
+      try {
+        const url = '/api/laptops' + (q ? '?q=' + encodeURIComponent(q) : '');
+        const res = await fetch(url);
+        const items = await res.json();
+        allItems = items;
+        renderGrid(items.filter(it => !brand || it.brand === brand));
+        populateBrands(items);
+      } catch (e) {
+        grid.innerHTML = '<div style="color:red">Error loading data: '+ escapeHtml(e.message) +'</div>';
+        console.error(e);
+      }
+    }
+
+    function populateBrands(items){
+      const brands = [...new Set(items.map(i=>i.brand).filter(Boolean))].sort();
+      brandSelect.innerHTML = '<option value="">Semua Brand</option>' + brands.map(b=>`<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join('');
+    }
+
+    function renderGrid(items){
+      if(!items.length){
+        grid.innerHTML = '<div style="grid-column:1/-1;color:#6b7280">Tidak ada produk.</div>';
+        return;
+      }
+      grid.innerHTML = items.map(it => {
+        const img = it.images && it.images[0] ? it.images[0] : 'https://via.placeholder.com/400x300?text=No+Image';
+        return `
+          <article class="card" data-id="${escapeHtml(it._id)}">
+            <div class="thumb"><img src="${escapeHtml(img)}" alt="${escapeHtml(it.name)}" /></div>
+            <div style="flex:1">
+              <div class="meta">
+                <div>
+                  <div class="title">${escapeHtml(it.name)}</div>
+                  <div class="brand">${escapeHtml(it.brand)} • ${escapeHtml(it.category||'')}</div>
+                </div>
+                <div class="price">Rp ${Number(it.price||0).toLocaleString('id-ID')}</div>
+              </div>
+              <div class="specs">${escapeHtml(it.specs?.cpu||'')} • ${escapeHtml(it.specs?.ram||'')} • ${escapeHtml(it.specs?.storage||'')}</div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-outline" data-action="detail">Lihat</button>
+              <button class="btn btn-primary" data-action="buy">Beli</button>
+            </div>
+          </article>
+        `;
+      }).join('');
+      attachHandlers();
+    }
+
+    function attachHandlers(){
+      grid.querySelectorAll('[data-action="detail"]').forEach(btn=>{
+        btn.addEventListener('click', e=>{
+          const id = e.target.closest('.card').dataset.id;
+          openDetail(id);
+        });
+      });
+      grid.querySelectorAll('[data-action="buy"]').forEach(btn=>{
+        btn.addEventListener('click', e=>{
+          const id = e.target.closest('.card').dataset.id;
+          buyNow(id);
+        });
+      });
+    }
+
+    function openDetail(id){
+      const it = allItems.find(x=>x._id === id);
+      if(!it) return alert('Produk tidak ditemukan');
+      modalImg.innerHTML = `<img src="${escapeHtml((it.images&&it.images[0])||'https://via.placeholder.com/600x400')}" alt="${escapeHtml(it.name)}">`;
+      modalName.textContent = it.name;
+      modalBrand.textContent = it.brand + (it.model ? ' — ' + it.model : '');
+      modalPrice.textContent = 'Rp ' + Number(it.price||0).toLocaleString('id-ID');
+      modalSpecs.textContent = (it.specs?.cpu||'') + ' • ' + (it.specs?.ram||'') + ' • ' + (it.specs?.storage||'');
+      modalDesc.textContent = it.description || '';
+      backdrop.style.display = 'flex';
+      backdrop.setAttribute('aria-hidden','false');
+    }
+
+    function closeModal(){
+      backdrop.style.display = 'none';
+      backdrop.setAttribute('aria-hidden','true');
+    }
+
+    function buyNow(id){
+      const it = allItems.find(x=>x._id === id);
+      if(!it) return alert('Produk tidak ditemukan');
+      alert('Terima kasih — fungsi beli masih demo. Produk: ' + it.name + '\\nHarga: Rp ' + Number(it.price||0).toLocaleString('id-ID'));
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', e => { if(e.target === backdrop) closeModal(); });
+    buyBtn.addEventListener('click', ()=> {
+      const id = allItems[0]?._id; // fallback: just show first
+      buyNow(id);
+    });
+    addCartBtn.addEventListener('click', ()=> alert('Ditambahkan ke keranjang (demo)'));
+
+    qInput.addEventListener('input', ()=> load(qInput.value.trim(), brandSelect.value));
+    brandSelect.addEventListener('change', ()=> load(qInput.value.trim(), brandSelect.value));
+
+    // initial load
+    load();
+  </script>
+</body>
+</html>
