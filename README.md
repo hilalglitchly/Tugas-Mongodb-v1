@@ -29,5 +29,5 @@ Project ini mencakup:
 ---
 
 ## Struktur Project
-[/screenshots/Struktur Project.png](https://github.com/hilalglitchly/Tugas-Mongodb-v1/blob/8419508b8127d0c093534df5557019c3698eb4fa/screenshots/Struktur%20Project.png)
+![image alt][/screenshots/Struktur Project.png](https://github.com/hilalglitchly/Tugas-Mongodb-v1/blob/8419508b8127d0c093534df5557019c3698eb4fa/screenshots/Struktur%20Project.png)
 
