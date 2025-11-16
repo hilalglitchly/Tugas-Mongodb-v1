@@ -1,17 +1,34 @@
-# Tugas Praktik Basis Data 1
+## Mongo Docker Project — Tugas Praktik Basis Data 1
 
-**Nama  :** MUHAMAD HILAL AKRAM ASURUS  
-**NIM   :** 2457201028
-**Kelas :** SI 31  
-**Mata Kuliah :** Sistem Basis Data
+**Nama   :** Muhamad Hilal Akram Asurus  
+**NIM    :** 2457201028  
+**Kelas  :** SI-31  
+**Mata Kuliah :** Sistem Basis Data  
 
-# Mongo Docker Project
-Project ini adalah contoh setup **MongoDB + Mongo Express + Node.js API** menggunakan **Docker Compose**.
+---
 
-# Struktur Project
-mongo-docker-project
-- **screenshots** Dokumentasi
-- **docker-compose.yml** Mengatur MongoDB, Mongo Express, dan Node.js API
-- **Dockerfile** Dockerfile untuk aplikasi Node.js
-- **package.json** Dependensi dan script Node.js
-- **server.js** API sederhana untuk koneksi ke MongoDB
+## Deskripsi Project  
+Project ini merupakan implementasi **MongoDB + Mongo Express + Node.js API** menggunakan **Docker Compose**.  
+Selain API, project ini juga memiliki **frontend sederhana (index.html)** untuk menampilkan daftar laptop yang tersimpan di database.
+
+Project ini mencakup:
+- CRUD database MongoDB
+- Integrasi Node.js API dan MongoDB
+- Deployment MongoDB & Mongo Express via Docker
+- Penyimpanan dan tampilan data laptop di frontend
+
+---
+
+## Teknologi yang Digunakan
+- **Node.js + Express**
+- **MongoDB**
+- **Mongo Express**
+- **Docker & Docker Compose**
+- **HTML + CSS Frontend**
+
+---
+
+## Struktur Project
+
+## 🗂️ Struktur Project
+
