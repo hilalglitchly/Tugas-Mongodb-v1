@@ -29,7 +29,5 @@ Project ini mencakup:
 ---
 
 ## Struktur Project
-
-## 🗂️ Struktur Project
-screenshots/Struktur Project.png
+/screenshots/Struktur Project.png
 
