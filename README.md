@@ -44,6 +44,6 @@ Project ini mencakup:
 ---
 
 ## Container Docker
-![image alt]([https://github.com/hilalglitchly/Tugas-Mongodb-v1/blob/9ab21936ee7e133ead85d0210fe24938d000759c/screenshots/Database%20dari%20Landing%20Page.png](https://github.com/hilalglitchly/Tugas-Mongodb-v1/blob/9ab21936ee7e133ead85d0210fe24938d000759c/screenshots/Container%20Docker.png))
+![image alt](https://github.com/hilalglitchly/Tugas-Mongodb-v1/blob/9ab21936ee7e133ead85d0210fe24938d000759c/screenshots/Container%20Docker.png)
 
 
